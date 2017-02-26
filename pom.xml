@@ -63,7 +63,7 @@
         </repository>
         <repository>
             <id>pex-repo</id>
-            <url>http://pex-repo.aoeu.xyz</url>
+            <url>http://pex-repo.aoeu.xyz/</url>
         </repository>
     </repositories>
 
@@ -74,10 +74,11 @@
             <version>1.11.2-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
-        <dependency>
+        <!--dependency>
             <groupId>ru.tehkode</groupId>
             <artifactId>PermissionsEx</artifactId>
-            <version>1.23.1</version>
-        </dependency>
+            <version>1.23.2-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency-->
     </dependencies>
 </project>

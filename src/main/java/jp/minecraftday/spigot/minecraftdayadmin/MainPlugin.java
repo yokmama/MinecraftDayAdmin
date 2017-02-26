@@ -1,5 +1,6 @@
 package jp.minecraftday.spigot.minecraftdayadmin;
 
+import jp.minecraftday.spigot.minecraftdayadmin.config.LoginTimes;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -15,24 +16,20 @@ import java.io.File;
 import java.io.IOException;
 
 public final class MainPlugin extends JavaPlugin implements Listener {
-    private static final String KEY_FIRST_LOGIN_TIME = "minecraftday.fisrtLogin";
-    private static final String KEY_ONTIME = "minecraftday.ontime";
-    private FileConfiguration loginTimes;
+    LoginTimes loginTimes;
 
     @Override
     public void onEnable() {
         // Plugin startup logic
         this.getServer().getPluginManager().registerEvents(this, this);
-
-        loginTimes = YamlConfiguration.loadConfiguration(new File(getDataFolder(), "loginTime.yml"));
-
+        loginTimes = new LoginTimes(this);
     }
 
     @Override
     public void onDisable() {
         // Plugin shutdown logic
         try {
-            loginTimes.save(new File(getDataFolder(), "loginTime.yml"));
+            loginTimes.commit();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -40,31 +37,22 @@ public final class MainPlugin extends JavaPlugin implements Listener {
 
     @EventHandler(priority = EventPriority.NORMAL)
     public void onPlayerLogin(final PlayerLoginEvent event) {
-        Player p = event.getPlayer();
-        long loginTime = loginTimes.getLong(p.getUniqueId().toString());
-        PlayerUtils.setMetadata(p, KEY_FIRST_LOGIN_TIME, System.currentTimeMillis(), this);
-        PlayerUtils.setMetadata(p, KEY_ONTIME, loginTime, this);
+        loginTimes.login(event.getPlayer());
     }
 
 
     @EventHandler(priority = EventPriority.NORMAL)
-    public void onPlayerLogin(final PlayerQuitEvent event) {
-        Player p = event.getPlayer();
-        long loginTime = (long)PlayerUtils.getMetadata(event.getPlayer(), KEY_FIRST_LOGIN_TIME, this).orElse(System.currentTimeMillis());
-        long onTime = (long)PlayerUtils.getMetadata(event.getPlayer(), KEY_ONTIME, this).orElse(0);
-        long currentOntime = onTime + (System.currentTimeMillis() - loginTime);
-        loginTimes.set(p.getUniqueId().toString(), currentOntime);
+    public void onPlayerQuit(final PlayerQuitEvent event) {
+        loginTimes.logout(event.getPlayer());
     }
 
     @EventHandler(priority = EventPriority.NORMAL)
     public void onPlayerMove(PlayerMoveEvent event) {
         if (event.isCancelled()) return;
 
-        long loginTime = (long)PlayerUtils.getMetadata(event.getPlayer(), KEY_FIRST_LOGIN_TIME, this).orElse(System.currentTimeMillis());
-        long onTime = (long)PlayerUtils.getMetadata(event.getPlayer(), KEY_ONTIME, this).orElse(0);
-        long currentOntime = onTime + (System.currentTimeMillis() - loginTime);
+        long currentOntime = loginTimes.getOnTime(event.getPlayer());
 
-        //System.out.println(String.format("PlayerTime: %s", StringUtils.timeFormat(currentOntime)));
+        //System.out.println(String.format("Player OnTime: %s", StringUtils.timeFormat(currentOntime)));
         //ここで、ある一定時間たったら、ランクをアップさせるとか実装できる
     }
 }

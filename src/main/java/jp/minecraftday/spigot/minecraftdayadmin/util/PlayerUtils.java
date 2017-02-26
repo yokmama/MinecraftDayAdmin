@@ -1,4 +1,4 @@
-package jp.minecraftday.spigot.minecraftdayadmin;
+package jp.minecraftday.spigot.minecraftdayadmin.util;
 
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.FixedMetadataValue;

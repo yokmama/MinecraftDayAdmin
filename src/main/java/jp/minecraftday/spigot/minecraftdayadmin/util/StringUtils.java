@@ -1,4 +1,4 @@
-package jp.minecraftday.spigot.minecraftdayadmin;
+package jp.minecraftday.spigot.minecraftdayadmin.util;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;

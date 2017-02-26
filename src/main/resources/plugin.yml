@@ -1,0 +1,3 @@
+name: MinecraftDayAdmin
+version: ${project.version}
+main: jp.minecraftday.spigot.minecraftdayadmin.MainPlugin
